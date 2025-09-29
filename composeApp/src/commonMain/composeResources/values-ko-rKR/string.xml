@@ -1,0 +1,9 @@
+<resources>
+  <string name="navigation">네비게이션</string>
+  <string name="telephone">전화</string>
+  <string name="camera">카메라</string>
+  <string name="dashboard">대시보드</string>
+  <string name="setting">설정</string>
+  <string name="music">음악</string>
+  <string name="kcef_download">필수 요소 다운로드 중...</string>
+</resources>

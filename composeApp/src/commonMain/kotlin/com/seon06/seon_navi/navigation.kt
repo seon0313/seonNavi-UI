@@ -26,16 +26,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewState
 
 @Composable
 fun navigationView(modifier: Modifier = Modifier) {
-    // 1. URL 로딩 충돌을 막기 위해 초기 URL을 null로 설정합니다. (★★★★★ 중요)
     val state = rememberWebViewState("http://localhost:5000")
-    var openLeftSide by remember { mutableStateOf(true) }
-    var openKeyboard by remember { mutableStateOf(true) }
+    var openLeftSide by remember { mutableStateOf(false) }
+    var openKeyboard by remember { mutableStateOf(false) }
     var leftSideWidth_var by remember { mutableStateOf(200.dp) }
     val leftSideWidth by animateDpAsState(leftSideWidth_var, tween(200))
 
@@ -59,7 +59,9 @@ fun navigationView(modifier: Modifier = Modifier) {
                 .width(leftSideWidth)
             , opened = openLeftSide, {
                 openLeftSide = !openLeftSide
-            })
+            }, {
+                openKeyboard = it
+                })
 
             Row(
                 modifier = Modifier.weight(1f)
@@ -85,7 +87,8 @@ fun navigationView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun navigationSideLeftView(modifier: Modifier = Modifier, opened: Boolean, changeOpened: () -> Unit){
+fun navigationSideLeftView(modifier: Modifier = Modifier, opened: Boolean, changeOpened: () -> Unit, changeKeyboard: (Boolean) -> Unit){
+    var textFieldValue by remember { mutableStateOf("") }
     Column(
         modifier = modifier
     ) {
@@ -95,10 +98,13 @@ fun navigationSideLeftView(modifier: Modifier = Modifier, opened: Boolean, chang
                     .width(50.dp).height(40.dp)) {
                     Text(">")
                 }
-                BasicTextField("", {}, modifier= Modifier.weight(1f)
+                BasicTextField(textFieldValue, { textFieldValue = it }, modifier= Modifier.weight(1f)
                     .height(40.dp)
                     .clip(RoundedCornerShape(5.dp))
-                    .background(MaterialTheme.colorScheme.tertiaryContainer),
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
+                    .onFocusChanged{
+                        if (it.isFocused) changeKeyboard(it.isFocused)
+                    },
                     maxLines = 1) { innerTextField ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
